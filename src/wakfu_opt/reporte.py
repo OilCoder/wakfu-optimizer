@@ -114,7 +114,10 @@ def _bloque_build(r: ResultadoBuild) -> list[str]:
             s.crit_pct,
         ]
         cols = " | ".join(str(n) for n in nums)
-        lineas.append(f"| {it.slot.value} | {it.nombre}{marca} | {it.id} | {it.nivel} | {cols} |")
+        lineas.append(
+            f"| {it.slot.value} | {it.nombre}{marca} | {it.id} | {it.nivel} | "
+            f"{it.rareza.name.lower()} | {cols} |"
+        )
     lineas += ["", "* = ítem fijo (lleva la piedra).", ""]
     return lineas
 
