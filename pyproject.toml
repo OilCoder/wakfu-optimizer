@@ -1,0 +1,49 @@
+[project]
+name = "wakfu-opt"
+version = "0.1.0"
+description = "Optimizador de builds de Wakfu: solver CP-SAT con garantía de optimalidad dentro de un proxy lineal + evaluador de daño no lineal."
+requires-python = ">=3.11"
+dependencies = [
+    "ortools",
+    "requests",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "mypy",
+]
+
+[project.scripts]
+wakfu-opt = "wakfu_opt.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 12
+
+[tool.mypy]
+python_version = "3.11"
+packages = ["wakfu_opt"]
+mypy_path = "src"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: tests de integración que cargan los datos completos del CDN",
+]

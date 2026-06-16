@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: wakfu-opt
+Version: 0.1.0
+Summary: Optimizador de builds de Wakfu: solver CP-SAT con garantía de optimalidad dentro de un proxy lineal + evaluador de daño no lineal.
+Requires-Python: >=3.11
+Requires-Dist: ortools
+Requires-Dist: requests
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: mypy; extra == "dev"

@@ -1,0 +1,30 @@
+# Perfil de ejemplo: build a distancia con Desenlace + Último Instante.
+# Anillos fijos (con las piedras), reutilizados en todas las franjas:
+#   - Gelanillo (9723, reliquia) -> Último Instante
+#   - Anillo Insangsato (21692, épico) -> Desenlace
+
+clase = "ejemplo"
+estilo = "distancia"            # distancia | melee | mixto
+solo_miticos = true            # el resto del equipo: solo míticos (rarity 4)
+sublimaciones = ["desenlace", "ultimo_instante"]
+items_fijos = [9723, 21692]    # los dos anillos con las piedras
+# Ítems vetados (no disponibles actualmente en el juego). Añade ids según los detectes.
+items_excluidos = [18776]      # Emblema de poder (no disponible)
+n_candidatas = 5
+# El informe genera 4 estrategias por franja: máx PA, máx PM, máx alcance y máx daño.
+# Tú eliges según cómo quieras invertir tus puntos Mayor (PA/PM/alcance).
+
+# Franjas de nivel (sets de equipo cada 15 niveles), de 65 a 200:
+franjas = [65, 80, 95, 110, 125, 140, 155, 170, 185, 200]
+
+# Base de características del personaje (contribución de los puntos repartidos).
+# Estrategia del jugador: completar crítico a 40 (umbral de Desenlace) con Fortuna,
+# todo lo demás a dominio distancia/crítico. Optimizar este reparto automáticamente
+# es trabajo de la Fase 7; por ahora se declara aquí.
+# Excepciones de rareza por slot: estos slots admiten también legendario (rarity 4).
+[rarezas_por_slot]
+segunda_arma = ["mitico", "legendario"]
+accesorio = ["mitico", "legendario"]
+
+[base]
+crit_pct = 40

@@ -1,0 +1,15 @@
+pyproject.toml
+src/wakfu_opt/__init__.py
+src/wakfu_opt/__main__.py
+src/wakfu_opt/cli.py
+src/wakfu_opt/config.py
+src/wakfu_opt.egg-info/PKG-INFO
+src/wakfu_opt.egg-info/SOURCES.txt
+src/wakfu_opt.egg-info/dependency_links.txt
+src/wakfu_opt.egg-info/entry_points.txt
+src/wakfu_opt.egg-info/requires.txt
+src/wakfu_opt.egg-info/top_level.txt
+src/wakfu_opt/datos/__init__.py
+src/wakfu_opt/dominio/__init__.py
+src/wakfu_opt/evaluador/__init__.py
+src/wakfu_opt/solver/__init__.py

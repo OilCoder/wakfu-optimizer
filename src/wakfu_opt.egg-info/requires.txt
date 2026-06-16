@@ -1,0 +1,7 @@
+ortools
+requests
+
+[dev]
+pytest
+ruff
+mypy
