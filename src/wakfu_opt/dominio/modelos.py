@@ -56,6 +56,20 @@ class StatsItem:
         "pv",
     )
 
+    @property
+    def solo_mono_elemental(self) -> bool:
+        """True si su único dominio es mono-elemento (inútil en builds multi-elemento)."""
+        otros_dom = (
+            self.dom_elemental
+            + self.dom_distancia
+            + self.dom_melee
+            + self.dom_critico
+            + self.dom_berserk
+            + self.dom_espalda
+            + self.dom_cura
+        )
+        return self.dom_mono_elemental > 0 and otros_dom == 0
+
     def __add__(self, otro: StatsItem) -> StatsItem:
         """Suma campo a campo; concatena `otros` y toma el mayor `elem_variable_n`."""
         sumados = {f: getattr(self, f) + getattr(otro, f) for f in self._FAMILIAS_NUMERICAS}

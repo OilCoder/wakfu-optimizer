@@ -56,6 +56,16 @@ def test_rareza_por_slot_permite_legendario(catalogo: list[Any]) -> None:
     assert all(it.rareza is Rareza.MITICO for it in otros)
 
 
+def test_excluye_mono_puro_en_multielemento(catalogo: list[Any]) -> None:
+    # La Rosálida (14281) da solo dominio mono-elemento -> fuera en bi-elemento, dentro en mono.
+    bi = PerfilBuild(clase="x", franjas=(110,), n_elementos=2)
+    mono = PerfilBuild(clase="x", franjas=(110,), n_elementos=1)
+    ids_bi = {it.id for it in filtrar_pool(catalogo, bi, 110)}
+    ids_mono = {it.id for it in filtrar_pool(catalogo, mono, 110)}
+    assert 14281 not in ids_bi
+    assert 14281 in ids_mono
+
+
 def test_excluye_items_vetados(catalogo: list[Any]) -> None:
     perfil_base = PerfilBuild(clase="sram", franjas=(200,))
     pool_completo = filtrar_pool(catalogo, perfil_base, franja=200)

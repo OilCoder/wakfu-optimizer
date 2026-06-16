@@ -14,15 +14,18 @@ def filtrar_pool(items: list[Item], perfil: PerfilBuild, franja: int) -> list[It
     """Devuelve los ítems candidatos para la franja `franja` (nivel tope).
 
     Un ítem entra si: su rareza está permitida, su nivel está en `[nivel_min_item, franja]`,
-    y no es un ítem fijo ni un ítem excluido del perfil (no disponibles en el juego).
+    no es un ítem fijo ni excluido, y —en builds multi-elemento— su dominio no es puramente
+    mono-elemento (un ítem cuyo único dominio es de 1 elemento no sirve a una build bi-elemento).
     """
     fuera = set(perfil.items_fijos) | set(perfil.items_excluidos)
+    multi_elemento = perfil.n_elementos > 1
     return [
         item
         for item in items
         if item.id not in fuera
         and item.rareza in perfil.rarezas_de_slot(item.slot)
         and perfil.nivel_min_item <= item.nivel <= franja
+        and not (multi_elemento and item.stats.solo_mono_elemental)
     ]
 
 
