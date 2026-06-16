@@ -93,8 +93,8 @@ def _bloque_build(r: ResultadoBuild) -> list[str]:
         f"PA {t.pa} · PM {t.pm} · Alcance {t.alcance} · PW {t.pw} · Crít {r.crit_final_pct:.0f}% · "
         f"Dom efectivo {_dom_efectivo(r):.0f} · **Daño {r.dano_estimado:.0f}**",
         "",
-        "| Slot | Ítem | id | Nv | Rareza | Elem | Mono | Dist | Crít | PA | PM | Alc | %Cr |",
-        "|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| Slot | Ítem | id | Nv | Rareza | Elem | Mono | Dist | Crít | PA | PM | Alc | PW | %Cr |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     fijos_ids = {it.id for it in r.items_fijos}
     equipo = sorted(
@@ -111,6 +111,7 @@ def _bloque_build(r: ResultadoBuild) -> list[str]:
             s.pa,
             s.pm,
             s.alcance,
+            s.pw,
             s.crit_pct,
         ]
         cols = " | ".join(str(n) for n in nums)

@@ -3,7 +3,7 @@
 #   - Gelanillo (9723, reliquia) -> Último Instante
 #   - Anillo Insangsato (21692, épico) -> Desenlace
 
-clase = "ejemplo"
+clase = "Desenlace"
 estilo = "distancia"            # distancia | melee | mixto
 solo_miticos = true            # el resto del equipo: solo míticos (rarity 4)
 sublimaciones = ["desenlace", "ultimo_instante"]

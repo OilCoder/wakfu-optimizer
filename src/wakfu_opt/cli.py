@@ -31,6 +31,7 @@ def _construir_parser() -> argparse.ArgumentParser:
         "--salida", default=None, help="carpeta de salida (def. salidas/<clase>_<estilo>)"
     )
     p_opt.add_argument("--datos", default=None, help="directorio de datos (def. autodetecta)")
+    p_opt.add_argument("--pdf", action="store_true", help="exportar también los informes a PDF")
     p_opt.set_defaults(func=_cmd_optimizar)
 
     # Subcomando: descargar
@@ -197,6 +198,12 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
     )
     escribir_reporte(resultados, perfil, dir_salida)  # type: ignore[arg-type]
     print(f"\nInforme escrito en: {dir_salida}/  ({len(modos)} estrategias por franja)")
+
+    if args.pdf:
+        from wakfu_opt.exportar_pdf import exportar_carpeta
+
+        n = exportar_carpeta(dir_salida)
+        print(f"Exportados {n} PDF en {dir_salida}/")
     return 0
 
 

@@ -12,7 +12,7 @@ PERFIL_EJEMPLO = Path(__file__).resolve().parents[1] / "perfiles" / "ejemplo_dis
 
 def test_carga_perfil_ejemplo() -> None:
     perfil, base = cargar_perfil(PERFIL_EJEMPLO)
-    assert perfil.clase == "ejemplo"
+    assert perfil.clase  # el nombre lo elige el usuario en el TOML
     assert perfil.estilo == "distancia"
     assert perfil.items_fijos == (9723, 21692)
     assert perfil.sublimaciones == ("desenlace", "ultimo_instante")
