@@ -80,17 +80,23 @@ def optimizar_franja(
     solver.parameters.max_time_in_seconds = 10.0
 
     # Cada modo "max recurso" maximiza ese recurso, lo fija, y luego maximiza el daño.
-    # El modo "dano" maximiza el daño directamente. Así el usuario ve cada extremo y decide
+    # "recursos" hace la cascada PA→PM→alcance (en ese orden de prioridad) y luego daño.
+    # "dano" maximiza el daño directamente. Así el usuario ve cada extremo y decide
     # cómo invertir sus puntos Mayor (PA/PM/alcance) según el equipo que elija.
-    recurso_expr = {
-        "pa": pa_expr,
-        "pm": pm_expr,
-        "alcance": alcance_expr,
-        "pw": pw_expr,
-    }.get(modo)
-    if recurso_expr is not None:
-        optimo = _maximizar(modelo, solver, recurso_expr)
-        modelo.add(recurso_expr == optimo)
+    if modo == "recursos":
+        for expr in (pa_expr, pm_expr, alcance_expr):
+            optimo = _maximizar(modelo, solver, expr)
+            modelo.add(expr == optimo)
+    else:
+        recurso_expr = {
+            "pa": pa_expr,
+            "pm": pm_expr,
+            "alcance": alcance_expr,
+            "pw": pw_expr,
+        }.get(modo)
+        if recurso_expr is not None:
+            optimo = _maximizar(modelo, solver, recurso_expr)
+            modelo.add(recurso_expr == optimo)
 
     return _enumerar_candidatas(
         modelo, solver, x, proxy_expr, pool, items_fijos, base_clase, franja, perfil.n_candidatas

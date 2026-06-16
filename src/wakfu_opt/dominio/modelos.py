@@ -9,8 +9,8 @@ from wakfu_opt.dominio.rareza import Rareza
 from wakfu_opt.dominio.slots import Slot
 
 Estilo = Literal["distancia", "melee", "mixto"]
-# Modo de optimización: maximizar un recurso (y luego daño) o maximizar daño puro.
-Modo = Literal["pa", "pm", "alcance", "pw", "dano"]
+# Modo de optimización: cascada de recursos, maximizar un recurso, o maximizar daño puro.
+Modo = Literal["recursos", "pa", "pm", "alcance", "pw", "dano"]
 
 
 @dataclass(frozen=True, slots=True)

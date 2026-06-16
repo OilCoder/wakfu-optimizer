@@ -159,7 +159,7 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
     catalogo, _ = normalizar_catalogo(cargar("items", dir_version), mapeo)
     items_fijos = resolver_items_fijos(catalogo, perfil)
 
-    modos = ("pa", "pm", "alcance", "pw", "dano")
+    modos = ("recursos", "pa", "pm", "alcance", "pw", "dano")
     print(f"Optimizando {perfil.clase} ({perfil.estilo}) — franjas {list(perfil.franjas)}")
     resultados: dict[int, dict[str, object]] = {}
     for franja in perfil.franjas:

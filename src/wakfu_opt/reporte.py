@@ -15,6 +15,7 @@ _ORDEN_SLOTS = list(Slot)
 
 # Modo interno -> etiqueta legible en el informe
 ETIQUETA_MODO = {
+    "recursos": "Máx recursos (PA→PM→alcance→daño)",
     "pa": "Máx PA (luego daño)",
     "pm": "Máx PM (luego daño)",
     "alcance": "Máx alcance (luego daño)",

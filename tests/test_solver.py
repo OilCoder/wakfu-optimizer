@@ -72,6 +72,17 @@ def test_modo_max_pa_prioriza_pa_sobre_dominio() -> None:
     assert mejor.totales.pa == 2
 
 
+def test_modo_recursos_cascada_pa_pm_alcance() -> None:
+    # Cascada PA→PM→alcance→daño: con PA máximo fijo, desempata por PM, luego alcance.
+    pool = [
+        hacer_item(1, Slot.CASCO, pa=1, pm=0),
+        hacer_item(2, Slot.CASCO, pa=1, pm=1),  # mismo PA, más PM -> gana
+    ]
+    [mejor] = optimizar_franja(pool, _perfil(n_candidatas=1), 200, StatsItem(), [], modo="recursos")
+    assert _ids(mejor) == {2}
+    assert mejor.totales.pa == 1 and mejor.totales.pm == 1
+
+
 def test_modo_dano_prioriza_dominio_sobre_pa() -> None:
     # Los mismos cascos: en modo "dano" gana el de más dominio aunque dé menos PA.
     pool = [hacer_item(1, Slot.CASCO, pa=2, elem=0), hacer_item(2, Slot.CASCO, pa=0, elem=100)]
