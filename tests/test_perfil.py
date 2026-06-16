@@ -17,7 +17,8 @@ def test_carga_perfil_ejemplo() -> None:
     assert perfil.items_fijos == (9723, 21692)
     assert perfil.sublimaciones == ("desenlace", "ultimo_instante")
     assert perfil.rarezas_permitidas == frozenset({Rareza.MITICO})
-    assert perfil.franjas == (65, 80, 95, 110, 125, 140, 155, 170, 185, 200)
+    assert perfil.franjas[0] == 20 and perfil.franjas[-1] == 245
+    assert 65 in perfil.franjas and len(perfil.franjas) == 16
     assert base.crit_pct == 40
 
 

@@ -141,6 +141,7 @@ def _cmd_buscar_piedra(args: argparse.Namespace) -> int:
 
 
 def _cmd_optimizar(args: argparse.Namespace) -> int:
+    from dataclasses import replace
     from pathlib import Path
 
     from wakfu_opt.datos.cargador import cargar, localizar_datos
@@ -163,20 +164,29 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
     print(f"Optimizando {perfil.clase} ({perfil.estilo}) — franjas {list(perfil.franjas)}")
     resultados: dict[int, dict[str, object]] = {}
     for franja in perfil.franjas:
-        pool = filtrar_pool(catalogo, perfil, franja)
+        # Los ítems fijos solo aplican si su nivel cabe en la franja. Si falta alguno (p. ej.
+        # los anillos con las piedras a nivel bajo), esa franja va sin sublimaciones: las piedras
+        # viven en esos ítems, así que sus restricciones (crit≥40 de Desenlace) no aplican.
+        fijos_franja = [it for it in items_fijos if it.nivel <= franja]
+        perfil_franja = perfil
+        if len(fijos_franja) < len(items_fijos):
+            perfil_franja = replace(perfil, sublimaciones=())
+
+        pool = filtrar_pool(catalogo, perfil_franja, franja)
         por_modo: dict[str, object] = {}
         for modo in modos:
             try:
-                candidatas = optimizar_franja(pool, perfil, franja, base, items_fijos, modo)
+                candidatas = optimizar_franja(pool, perfil_franja, franja, base, fijos_franja, modo)
             except BuildInfactible:
                 candidatas = []
-            por_modo[modo] = evaluar(candidatas, perfil)[0] if candidatas else None
+            por_modo[modo] = evaluar(candidatas, perfil_franja)[0] if candidatas else None
         resultados[franja] = por_modo
+        sin_piedra = " (sin piedras)" if perfil_franja is not perfil else ""
         danos = " · ".join(
             f"{m}={(r.dano_estimado):.0f}" if (r := por_modo[m]) else f"{m}=—"  # type: ignore[attr-defined]
             for m in modos
         )
-        print(f"  franja ≤{franja}: daño {danos}")
+        print(f"  franja ≤{franja}{sin_piedra}: daño {danos}")
 
     if all(r is None for por_modo in resultados.values() for r in por_modo.values()):
         print("Ninguna franja produjo una build factible. Revisa breakpoints/crit/pool.")
@@ -186,7 +196,7 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
         Path(args.salida) if args.salida else Path("salidas") / f"{perfil.clase}_{perfil.estilo}"
     )
     escribir_reporte(resultados, perfil, dir_salida)  # type: ignore[arg-type]
-    print(f"\nInforme escrito en: {dir_salida}/ (resumen.md + franja_NNN.md, 3 estrategias)")
+    print(f"\nInforme escrito en: {dir_salida}/  ({len(modos)} estrategias por franja)")
     return 0
 
 
