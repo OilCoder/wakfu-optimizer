@@ -1,0 +1,35 @@
+# Claude Code
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Datos cacheados del CDN de Ankama (>20 MB, se regeneran)
+data/
+
+# Common
+.env
+*.key
+*.log
+
+# Folders that emerge but are gitignored when present
+debug/
+outputs/
+# Reportes Markdown generados por `optimizar`
+salidas/
+
+# Capturas de pantalla y material de trabajo personal
+mejoras/
+*.png
+*.jpg
+*.jpeg
+
+# OS
+.DS_Store
+Thumbs.db
