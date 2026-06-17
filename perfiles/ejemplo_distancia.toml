@@ -11,6 +11,9 @@ items_fijos = [9723, 21692]    # los dos anillos con las piedras
 # Ítems vetados (no disponibles actualmente en el juego). Añade ids según los detectes.
 items_excluidos = [18776]      # Emblema de poder (no disponible)
 n_candidatas = 5
+# Dominio de encantamiento (4 slots que escalan con el nivel del ítem). ~0.42 ≈ 85 dominio en lv200.
+# Penaliza ítems de nivel inferior al tope de la franja (evita el sesgo del Duro Nium lv79).
+encantamiento_por_nivel = 0.42
 # El informe genera 4 estrategias por franja: máx PA, máx PM, máx alcance y máx daño.
 # Tú eliges según cómo quieras invertir tus puntos Mayor (PA/PM/alcance).
 
@@ -29,3 +32,4 @@ accesorio = ["mitico", "legendario"]
 
 [base]
 crit_pct = 40
+pa = 6           # PA base del personaje (clase + punto Mayor obligatorio); calibra el valor de 1 PA

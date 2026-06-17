@@ -22,7 +22,7 @@ from ortools.sat.python import cp_model
 from wakfu_opt.dominio.modelos import BuildCandidata, Item, PerfilBuild, StatsItem
 from wakfu_opt.dominio.slots import CAPACIDAD_SLOT, Slot
 from wakfu_opt.dominio.sublimaciones import resolver_efectos
-from wakfu_opt.solver.pesos import DOM_CRITICO_POR_PUNTO_SUERTE, peso_proxy
+from wakfu_opt.solver.pesos import DOM_CRITICO_POR_PUNTO_SUERTE, ESCALA, peso_proxy
 from wakfu_opt.solver.solucion import construir_candidata
 
 
@@ -37,12 +37,15 @@ def optimizar_franja(
     base_clase: StatsItem,
     items_fijos: list[Item],
     modo: str = "dano",
+    valor_pa: float = 0.0,
 ) -> list[BuildCandidata]:
     """Devuelve hasta `perfil.n_candidatas` builds, ordenadas por dominio decreciente.
 
     Según `modo`:
       - "pa" / "pm" / "alcance": maximiza ese recurso, lo fija, y luego maximiza el daño.
       - "dano": maximiza solo el daño (con crit≥40 si la piedra lo exige).
+    `valor_pa` valora cada PA del equipo como dominio equivalente (≈ maestría/PA), para que
+    el solver compare PA y dominio en daño real (modo "óptimo", calibrado en 2 pasadas).
     Lanza BuildInfactible si no hay solución.
     """
     efectos = resolver_efectos(list(perfil.sublimaciones))
@@ -64,14 +67,20 @@ def optimizar_franja(
     pm_expr = base.pm + sum(x[i] * pool[i].stats.pm for i in range(len(pool)))
     alcance_expr = base.alcance + sum(x[i] * pool[i].stats.alcance for i in range(len(pool)))
     pw_expr = base.pw + sum(x[i] * pool[i].stats.pw for i in range(len(pool)))
+    # Dominio de encantamiento por ítem (≈ 4 slots que escalan con el nivel del ítem)
+    enc = perfil.encantamiento_por_nivel
     proxy_expr = sum(
         x[i]
-        * peso_proxy(
-            pool[i].stats,
-            perfil.estilo,
-            efectos.peso_dom_critico,
-            perfil.factor_mono_elemento,
-            dom_por_crit,
+        * (
+            peso_proxy(
+                pool[i].stats,
+                perfil.estilo,
+                efectos.peso_dom_critico,
+                perfil.factor_mono_elemento,
+                dom_por_crit,
+            )
+            + round(enc * pool[i].nivel * ESCALA)
+            + round(valor_pa * pool[i].stats.pa * ESCALA)
         )
         for i in range(len(pool))
     )

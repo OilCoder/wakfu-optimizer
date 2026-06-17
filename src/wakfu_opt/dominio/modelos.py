@@ -9,8 +9,9 @@ from wakfu_opt.dominio.rareza import Rareza
 from wakfu_opt.dominio.slots import Slot
 
 Estilo = Literal["distancia", "melee", "mixto"]
-# Modo de optimización: cascada de recursos, maximizar un recurso, o maximizar daño puro.
-Modo = Literal["recursos", "pa", "pm", "alcance", "pw", "dano"]
+# Modo de optimización: óptimo (PA valorado como dominio), cascada de recursos,
+# maximizar un recurso, o maximizar daño puro.
+Modo = Literal["optimo", "recursos", "pa", "pm", "alcance", "pw", "dano"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -117,6 +118,9 @@ class PerfilBuild:
     crit_libera_dominio: bool = (
         True  # valorar el % crítico de ítems como dominio (puntos de Suerte)
     )
+    # Dominio de encantamiento aproximado por nivel del ítem (4 slots que escalan con el nivel).
+    # ~0.42 calibra a ~85 de dominio en un ítem lv200. 0 lo desactiva. Penaliza ítems de nivel bajo.
+    encantamiento_por_nivel: float = 0.0
     nivel_min_item: int = 0
     n_candidatas: int = 20
     # Opciones de salida

@@ -13,6 +13,10 @@ instantáneo y no dependa de que todas las fases estén implementadas.
 from __future__ import annotations
 
 import argparse
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from wakfu_opt.dominio.modelos import BuildCandidata, Item, PerfilBuild, StatsItem
 
 
 def _construir_parser() -> argparse.ArgumentParser:
@@ -161,7 +165,7 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
     catalogo, _ = normalizar_catalogo(cargar("items", dir_version), mapeo)
     items_fijos = resolver_items_fijos(catalogo, perfil)
 
-    modos = ("recursos", "pa", "pm", "alcance", "pw", "dano")
+    modos = ("optimo", "recursos", "pa", "pm", "alcance", "pw", "dano")
     print(f"Optimizando {perfil.clase} ({perfil.estilo}) — franjas {list(perfil.franjas)}")
     resultados: dict[int, dict[str, object]] = {}
     for franja in perfil.franjas:
@@ -177,7 +181,12 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
         por_modo: dict[str, object] = {}
         for modo in modos:
             try:
-                candidatas = optimizar_franja(pool, perfil_franja, franja, base, fijos_franja, modo)
+                if modo == "optimo":
+                    candidatas = _optimizar_optimo(pool, perfil_franja, franja, base, fijos_franja)
+                else:
+                    candidatas = optimizar_franja(
+                        pool, perfil_franja, franja, base, fijos_franja, modo
+                    )
             except BuildInfactible:
                 candidatas = []
             por_modo[modo] = evaluar(candidatas, perfil_franja)[0] if candidatas else None
@@ -210,6 +219,60 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
         else:
             print(f"Exportados {n} PDF en {dir_salida}/")
     return 0
+
+
+def _optimizar_optimo(
+    pool: list[Item],
+    perfil: PerfilBuild,
+    franja: int,
+    base: StatsItem,
+    fijos: list[Item],
+) -> list[BuildCandidata]:
+    """Selección óptima: maximiza el daño TOTAL (dominio × PA), no solo el dominio.
+
+    Itera el valor de 1 PA (≈ maestría/PA) porque la linealización de un único punto no
+    da el máximo del producto. Prueba varios valores y se queda con la build de más daño
+    total real (que el evaluador calcula ya como daño_por_golpe × PA).
+    """
+    from wakfu_opt.evaluador.reordenador import evaluar
+    from wakfu_opt.solver.modelo_cpsat import BuildInfactible, optimizar_franja
+
+    candidatas: list[list[BuildCandidata]] = []
+
+    def probar(valor_pa: float) -> list[BuildCandidata]:
+        try:
+            return optimizar_franja(
+                pool, perfil, franja, base, fijos, modo="dano", valor_pa=valor_pa
+            )
+        except BuildInfactible:
+            return []
+
+    # Extremos: máx daño puro (valor_pa=0) y máx PA. El óptimo no será peor que ninguno.
+    candidatas.append(probar(0.0))
+    try:
+        candidatas.append(optimizar_franja(pool, perfil, franja, base, fijos, modo="pa"))
+    except BuildInfactible:
+        pass
+
+    # Iterar el valor de 1 PA (≈ maestría/PA) buscando el balance PA↔dominio que más daño da.
+    valor_pa = 0.0
+    for _ in range(5):
+        cand = probar(valor_pa)
+        if not cand:
+            break
+        candidatas.append(cand)
+        t = evaluar(cand, perfil)[0].totales
+        maestria = t.dom_elemental + 0.5 * t.dom_mono_elemental + t.dom_distancia + t.dom_critico
+        nuevo = maestria / max(t.pa, 1)
+        if abs(nuevo - valor_pa) < 0.5:
+            break
+        valor_pa = nuevo
+
+    candidatas = [c for c in candidatas if c]
+    if not candidatas:
+        return []
+    # Quedarse con la candidata de mayor daño total real (daño_por_golpe × PA)
+    return max(candidatas, key=lambda c: evaluar(c, perfil)[0].dano_estimado)
 
 
 def main(argv: list[str] | None = None) -> int:

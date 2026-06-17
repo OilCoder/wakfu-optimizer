@@ -32,6 +32,7 @@ def cargar_perfil(ruta: str | Path) -> tuple[PerfilBuild, StatsItem]:
         elemento_principal=datos.get("elemento_principal"),
         n_elementos=datos.get("n_elementos", 2),
         crit_libera_dominio=datos.get("crit_libera_dominio", True),
+        encantamiento_por_nivel=datos.get("encantamiento_por_nivel", 0.0),
         nivel_min_item=datos.get("nivel_min_item", 0),
         n_candidatas=datos.get("n_candidatas", 20),
         exportar_pdf=datos.get("pdf", False),

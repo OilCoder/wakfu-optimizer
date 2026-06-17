@@ -28,20 +28,29 @@ def evaluar(candidatas: list[BuildCandidata], perfil: PerfilBuild) -> list[Resul
     )
     crit_factor_pct = efectos.crit_minimo_pct if perfil.crit_libera_dominio else None
 
+    def encantamiento(c: BuildCandidata) -> float:
+        return perfil.encantamiento_por_nivel * sum(it.nivel for it in (*c.items, *c.items_fijos))
+
+    def dano_total(c: BuildCandidata) -> float:
+        # Daño por golpe × PA total: el daño del turno es proporcional al PA (más golpes).
+        por_golpe = estimar_dano(
+            c.totales,
+            estilo=perfil.estilo,
+            peso_dom_critico=efectos.peso_dom_critico,
+            danos_finales_pct=efectos.danos_finales_pct,
+            factor_mono_elemento=perfil.factor_mono_elemento,
+            dom_por_crit=dom_por_crit,
+            dominio_extra=encantamiento(c),
+            crit_factor_pct=crit_factor_pct,
+        )
+        return por_golpe * max(c.totales.pa, 1)
+
     resultados = [
         ResultadoBuild(
             franja=c.franja,
             items=c.items,
             items_fijos=c.items_fijos,
-            dano_estimado=estimar_dano(
-                c.totales,
-                estilo=perfil.estilo,
-                peso_dom_critico=efectos.peso_dom_critico,
-                danos_finales_pct=efectos.danos_finales_pct,
-                factor_mono_elemento=perfil.factor_mono_elemento,
-                dom_por_crit=dom_por_crit,
-                crit_factor_pct=crit_factor_pct,
-            ),
+            dano_estimado=dano_total(c),
             valor_proxy=c.valor_proxy,
             crit_final_pct=float(c.totales.crit_pct),
             totales=c.totales,

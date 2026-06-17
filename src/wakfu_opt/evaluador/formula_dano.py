@@ -45,6 +45,7 @@ def estimar_dano(
     danos_finales_pct: float,
     factor_mono_elemento: float = 1.0,
     dom_por_crit: float = 0.0,
+    dominio_extra: float = 0.0,
     crit_factor_pct: float | None = None,
     resist_pct: float = 0.0,
     base: float = BASE_REFERENCIA,
@@ -53,10 +54,12 @@ def estimar_dano(
 
     `crit_factor_pct` fija el crítico usado en el factor crítico (cuando se mantiene en el
     umbral y el exceso se convierte en dominio); si es None usa el crítico real de la build.
+    `dominio_extra` suma dominio no atado a un campo de StatsItem (p. ej. encantamiento).
     """
     maestria = maestria_efectiva(
         totales, estilo, peso_dom_critico, factor_mono_elemento, dom_por_crit
     )
+    maestria += dominio_extra
     crit_efectivo = totales.crit_pct if crit_factor_pct is None else crit_factor_pct
     crit_frac = min(crit_efectivo / 100.0, 1.0)
 
