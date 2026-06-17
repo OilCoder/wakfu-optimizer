@@ -119,6 +119,9 @@ class PerfilBuild:
     )
     nivel_min_item: int = 0
     n_candidatas: int = 20
+    # Opciones de salida
+    exportar_pdf: bool = False
+    agrupar_zip: bool = False
 
     @property
     def factor_mono_elemento(self) -> float:

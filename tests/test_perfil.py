@@ -22,6 +22,16 @@ def test_carga_perfil_ejemplo() -> None:
     assert base.crit_pct == 40
 
 
+def test_perfil_legendario_pdf_zip() -> None:
+    from wakfu_opt.dominio.rareza import Rareza
+
+    ruta = Path(__file__).resolve().parents[1] / "perfiles" / "desenlace_legendario.toml"
+    perfil, _ = cargar_perfil(ruta)
+    assert perfil.rarezas_permitidas == frozenset({Rareza.MITICO, Rareza.LEGENDARIO})
+    assert perfil.exportar_pdf is True
+    assert perfil.agrupar_zip is True
+
+
 def test_base_vacia_por_defecto(tmp_path: Path) -> None:
     toml = tmp_path / "p.toml"
     toml.write_text('clase = "x"\nfranjas = [200]\n', encoding="utf-8")

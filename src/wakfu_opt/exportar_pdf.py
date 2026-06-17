@@ -42,3 +42,14 @@ def exportar_carpeta(dir_salida: Path) -> int:
     for md in archivos:
         md_a_pdf(md, md.with_suffix(".pdf"))
     return len(archivos)
+
+
+def agrupar_zip(dir_salida: Path) -> Path:
+    """Empaqueta todos los PDF de la carpeta en un único `.zip` junto a ella."""
+    import zipfile
+
+    ruta_zip = dir_salida.with_suffix(".zip")
+    with zipfile.ZipFile(ruta_zip, "w", zipfile.ZIP_DEFLATED) as zf:
+        for pdf in sorted(dir_salida.glob("*.pdf")):
+            zf.write(pdf, pdf.name)
+    return ruta_zip

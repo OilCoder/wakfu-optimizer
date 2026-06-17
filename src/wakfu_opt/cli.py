@@ -199,11 +199,15 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
     escribir_reporte(resultados, perfil, dir_salida)  # type: ignore[arg-type]
     print(f"\nInforme escrito en: {dir_salida}/  ({len(modos)} estrategias por franja)")
 
-    if args.pdf:
-        from wakfu_opt.exportar_pdf import exportar_carpeta
+    # PDF si lo pide la línea de comandos o el perfil; ZIP solo si lo pide el perfil
+    if args.pdf or perfil.exportar_pdf:
+        from wakfu_opt.exportar_pdf import agrupar_zip, exportar_carpeta
 
         n = exportar_carpeta(dir_salida)
         print(f"Exportados {n} PDF en {dir_salida}/")
+        if perfil.agrupar_zip:
+            ruta_zip = agrupar_zip(dir_salida)
+            print(f"PDFs agrupados en: {ruta_zip}")
     return 0
 
 

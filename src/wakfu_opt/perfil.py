@@ -34,6 +34,8 @@ def cargar_perfil(ruta: str | Path) -> tuple[PerfilBuild, StatsItem]:
         crit_libera_dominio=datos.get("crit_libera_dominio", True),
         nivel_min_item=datos.get("nivel_min_item", 0),
         n_candidatas=datos.get("n_candidatas", 20),
+        exportar_pdf=datos.get("pdf", False),
+        agrupar_zip=datos.get("zip", False),
     )
     return perfil, _base(datos.get("base", {}))
 
