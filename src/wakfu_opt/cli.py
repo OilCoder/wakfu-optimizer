@@ -204,10 +204,11 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
         from wakfu_opt.exportar_pdf import agrupar_zip, exportar_carpeta
 
         n = exportar_carpeta(dir_salida)
-        print(f"Exportados {n} PDF en {dir_salida}/")
         if perfil.agrupar_zip:
             ruta_zip = agrupar_zip(dir_salida)
-            print(f"PDFs agrupados en: {ruta_zip}")
+            print(f"{n} PDFs agrupados en: {ruta_zip} (sin PDFs sueltos)")
+        else:
+            print(f"Exportados {n} PDF en {dir_salida}/")
     return 0
 
 
