@@ -77,6 +77,7 @@ def _md_franja(franja: int, por_modo: dict[str, ResultadoBuild | None], perfil: 
         f"Piedras: {piedras}",
         "",
     ]
+    lineas += _tabla_comparativa(por_modo)
     for modo, etiqueta in ETIQUETA_MODO.items():
         lineas.append(f"## {etiqueta}")
         r = por_modo.get(modo)
@@ -85,6 +86,37 @@ def _md_franja(franja: int, por_modo: dict[str, ResultadoBuild | None], perfil: 
             continue
         lineas += _bloque_build(r)
     return "\n".join(lineas) + "\n"
+
+
+def _tabla_comparativa(por_modo: dict[str, ResultadoBuild | None]) -> list[str]:
+    """Tabla de cabecera: cada estrategia con su daño y el % que pierde frente al mejor."""
+    validos = [(m, r) for m, r in por_modo.items() if r is not None]
+    if not validos:
+        return ["_Sin builds factibles en esta franja._", ""]
+    dano_max = max(r.dano_estimado for _, r in validos)
+    validos.sort(key=lambda mr: mr[1].dano_estimado, reverse=True)
+
+    lineas = [
+        "## Comparación de estrategias",
+        "",
+        "| Estrategia | PA | PM | Alc | PW | Crít | Daño total | % vs mejor |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for modo, r in validos:
+        t = r.totales
+        pct = (r.dano_estimado / dano_max - 1) * 100
+        marca = "**mejor**" if pct == 0 else f"{pct:.1f}%"
+        lineas.append(
+            f"| {ETIQUETA_MODO[modo]} | {t.pa} | {t.pm} | {t.alcance} | {t.pw} | "
+            f"{r.crit_final_pct:.0f}% | {r.dano_estimado:.0f} | {marca} |"
+        )
+    lineas += [
+        "",
+        "El **% vs mejor** es el coste en daño de elegir esa estrategia: lo que pierdes "
+        "por priorizar ese recurso (PM/alcance/PW) en vez del daño máximo.",
+        "",
+    ]
+    return lineas
 
 
 def _bloque_build(r: ResultadoBuild) -> list[str]:
