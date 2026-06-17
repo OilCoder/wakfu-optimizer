@@ -28,7 +28,7 @@ def _construir_parser() -> argparse.ArgumentParser:
     )
     p_opt.add_argument("--perfil", required=True, help="ruta al perfil de build (.toml)")
     p_opt.add_argument(
-        "--salida", default=None, help="carpeta de salida (def. salidas/<clase>_<estilo>)"
+        "--salida", default=None, help="carpeta de salida (def. salidas/<nombre_perfil>)"
     )
     p_opt.add_argument("--datos", default=None, help="directorio de datos (def. autodetecta)")
     p_opt.add_argument("--pdf", action="store_true", help="exportar también los informes a PDF")
@@ -193,9 +193,9 @@ def _cmd_optimizar(args: argparse.Namespace) -> int:
         print("Ninguna franja produjo una build factible. Revisa breakpoints/crit/pool.")
         return 1
 
-    dir_salida = (
-        Path(args.salida) if args.salida else Path("salidas") / f"{perfil.clase}_{perfil.estilo}"
-    )
+    # Una carpeta por perfil: usa el nombre del archivo .toml (único por perfil)
+    nombre_perfil = Path(args.perfil).stem
+    dir_salida = Path(args.salida) if args.salida else Path("salidas") / nombre_perfil
     escribir_reporte(resultados, perfil, dir_salida)  # type: ignore[arg-type]
     print(f"\nInforme escrito en: {dir_salida}/  ({len(modos)} estrategias por franja)")
 
